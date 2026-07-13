@@ -363,12 +363,10 @@ function send(text){
   var history=messages.map(function(m){ return {role:m.role,content:m.content.split(META)[0].trim()}; });
   var contents=history.map(function(m){ return {role:(m.role==="assistant"?"model":"user"), parts:[{text:m.content}]}; });
   var endpoint = CONFIG.apiEndpoint || "https://api.anthropic.com/v1/messages";
-  var _payload=JSON.stringify({system_instruction:{parts:[{text:SYSTEM_PROMPT}]},contents:contents,generationConfig:{maxOutputTokens:CONFIG.maxTokens}});
-
   fetch(endpoint,{
     method:"POST",
-    headers:{"Content-Type":"application/x-www-form-urlencoded;charset=UTF-8"},
-    body:"payload="+encodeURIComponent(_payload)
+    headers:{"Content-Type":"text/plain;charset=UTF-8"},
+    body:JSON.stringify({system_instruction:{parts:[{text:SYSTEM_PROMPT}]},contents:contents,generationConfig:{maxOutputTokens:CONFIG.maxTokens}})
   }).then(function(res){ return res.json(); }).then(function(data){
     var _c=(data.candidates&&data.candidates[0])||null;
     var _parts=(_c&&_c.content&&_c.content.parts)||[];
