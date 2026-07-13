@@ -1,0 +1,421 @@
+<div id="fleming-app"></div>
+
+<style>
+  #fleming-app *{box-sizing:border-box;font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif}
+  .flm-wrap{display:flex;flex-direction:column;height:720px;max-width:640px;margin:0 auto;background:#f4f7fb;border:1px solid #dbe4f0;border-radius:16px;overflow:hidden;box-shadow:0 20px 50px rgba(8,26,69,.18);position:relative}
+  .flm-header{padding:16px 20px 12px;background:linear-gradient(90deg,#081a45 0%,#0d2a63 50%,#16407e 100%)}
+  .flm-htop{display:flex;align-items:center;justify-content:space-between}
+  .flm-logo{display:flex;align-items:center;gap:10px}
+  .flm-brand{line-height:1}
+  .flm-brand .b1{font-weight:700;font-size:17px;letter-spacing:.5px;color:#fff}
+  .flm-brand .b2{font-size:9px;letter-spacing:.18em;color:#fff;opacity:.9;margin-top:2px}
+  .flm-hbtns{display:flex;gap:6px}
+  .flm-ico{width:36px;height:36px;border-radius:10px;background:rgba(255,255,255,.12);border:none;color:#cfe0f7;display:flex;align-items:center;justify-content:center;cursor:pointer;position:relative;font-size:16px}
+  .flm-ico:hover{background:rgba(255,255,255,.22)}
+  .flm-badge{position:absolute;top:-4px;right:-4px;min-width:18px;height:18px;padding:0 4px;background:#21b6a8;color:#fff;font-size:10px;font-weight:700;border-radius:9px;display:flex;align-items:center;justify-content:center}
+  .flm-status{margin-top:12px;display:flex;align-items:center;gap:8px}
+  .flm-dot{width:8px;height:8px;border-radius:50%;background:#21b6a8;animation:flm-pulse 1.5s infinite}
+  @keyframes flm-pulse{0%,100%{opacity:1}50%{opacity:.4}}
+  .flm-status .s1{color:#fff;font-weight:600;font-size:14px}
+  .flm-status .s2{color:#9fc0ee;font-size:12px}
+  .flm-idbar{padding:8px 16px;background:#fff;border-bottom:1px solid #e3eaf4;display:flex;align-items:center;gap:8px;font-size:12px}
+  .flm-idbar input{flex:1;padding:5px 8px;border-radius:6px;background:#f4f7fb;border:1px solid #dbe4f0;outline:none;font-size:12px}
+  .flm-idbar input:focus{border-color:#16407e}
+  .flm-idbar .flm-idok{padding:5px 10px;border-radius:6px;background:#16407e;color:#fff;border:none;cursor:pointer}
+  .flm-idbar .flm-edit{margin-left:auto;color:#16407e;background:none;border:none;cursor:pointer;text-decoration:underline;font-size:12px}
+  .flm-msgs{flex:1;overflow-y:auto;padding:16px;display:flex;flex-direction:column;gap:12px}
+  .flm-row{display:flex}
+  .flm-row.user{justify-content:flex-end}
+  .flm-row.bot{justify-content:flex-start}
+  .flm-bubble{max-width:82%;padding:10px 16px;border-radius:16px;font-size:14px;line-height:1.55;white-space:pre-wrap;box-shadow:0 1px 2px rgba(0,0,0,.05)}
+  .flm-bubble.user{background:#16407e;color:#fff;border-bottom-right-radius:4px}
+  .flm-bubble.bot{background:#fff;color:#1f2937;border:1px solid #e3eaf4;border-bottom-left-radius:4px}
+  .flm-bubble.esc{background:#fff7ed;color:#7c4a14;border:1px solid #fcd9a8;border-bottom-left-radius:4px}
+  .flm-ref{display:inline-block;margin:0 2px;padding:2px 6px;border-radius:4px;background:#e0f2ef;color:#0d8a7a;font-size:12px;font-weight:500;vertical-align:middle}
+  .flm-fb{display:flex;align-items:center;gap:8px;margin:6px 0 0 4px;font-size:11px;color:#94a3b8}
+  .flm-fb button{background:none;border:none;cursor:pointer;padding:3px;border-radius:4px;font-size:13px}
+  .flm-tag{font-size:10px;padding:2px 8px;border-radius:10px;font-weight:500}
+  .flm-email-card{margin:8px 0 0 4px;max-width:82%;background:#fafcff;border:1px solid #d6e2f2;border-radius:12px;overflow:hidden}
+  .flm-email-head{display:flex;align-items:center;gap:6px;padding:8px 12px;background:#eef4fb;color:#16407e;font-size:12px;font-weight:600;border-bottom:1px solid #dbe7f5}
+  .flm-email-body{padding:10px 12px;font-size:11px;color:#334155;font-family:ui-monospace,SFMono-Regular,Menlo,monospace}
+  .flm-email-body .lbl{color:#94a3b8}
+  .flm-email-body .txt{white-space:pre-wrap;margin-top:6px}
+  .flm-email-actions{display:flex;gap:8px;padding:0 12px 12px}
+  .flm-btn-primary{display:inline-flex;align-items:center;gap:5px;text-decoration:none;font-size:11px;padding:6px 12px;border-radius:8px;background:#16407e;color:#fff;border:none;cursor:pointer}
+  .flm-btn-soft{display:inline-flex;align-items:center;gap:5px;font-size:11px;padding:6px 12px;border-radius:8px;background:#e0f2ef;color:#0d8a7a;border:none;cursor:pointer}
+  .flm-typing{display:flex;gap:6px;padding:12px 16px;background:#fff;border:1px solid #e3eaf4;border-radius:16px;border-bottom-left-radius:4px;width:fit-content}
+  .flm-typing span{width:8px;height:8px;border-radius:50%;background:#21b6a8;animation:flm-bounce 1.2s infinite}
+  .flm-typing span:nth-child(2){animation-delay:.15s}
+  .flm-typing span:nth-child(3){animation-delay:.3s}
+  @keyframes flm-bounce{0%,60%,100%{transform:translateY(0)}30%{transform:translateY(-6px)}}
+  .flm-sugg{padding:4px 16px 8px}
+  .flm-sugg-box{border-radius:12px;padding:10px;background:#16407e}
+  .flm-sugg-box .t{font-size:10px;color:#fff;opacity:.8;font-weight:600;letter-spacing:.05em;margin:0 0 6px 4px}
+  .flm-chip{font-size:12px;padding:6px 12px;border-radius:14px;color:#fff;background:rgba(255,255,255,.14);border:1px solid rgba(255,255,255,.4);cursor:pointer}
+  .flm-chip:hover{background:rgba(255,255,255,.24)}
+  .flm-chips{display:flex;flex-wrap:wrap;gap:8px}
+  .flm-input{padding:12px 16px;background:#fff;border-top:1px solid #e3eaf4;display:flex;align-items:center;gap:8px}
+  .flm-input input{flex:1;padding:10px 16px;border-radius:12px;background:#f4f7fb;border:1px solid #dbe4f0;font-size:14px;outline:none}
+  .flm-input input:focus{border-color:#16407e}
+  .flm-send{width:44px;height:44px;border-radius:12px;background:#16407e;color:#fff;border:none;cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:16px}
+  .flm-send:disabled{opacity:.4;cursor:not-allowed}
+  .flm-foot{text-align:center;font-size:10px;color:#94a3b8;padding:0 16px 8px}
+  .flm-overlay{position:absolute;inset:0;background:rgba(0,0,0,.3);display:flex;justify-content:flex-end;z-index:20}
+  .flm-panel{width:90%;max-width:400px;height:100%;background:#f8fafc;box-shadow:-10px 0 30px rgba(0,0,0,.2);display:flex;flex-direction:column}
+  .flm-panel-head{padding:14px 16px;background:linear-gradient(90deg,#081a45 0%,#16407e 100%);display:flex;align-items:center;justify-content:space-between;color:#fff}
+  .flm-panel-head .x{background:none;border:none;color:#cfe0f7;cursor:pointer;font-size:15px}
+  .flm-panel-body{flex:1;overflow-y:auto;padding:16px;display:flex;flex-direction:column;gap:12px}
+  .flm-card{background:#fff;border:1px solid #e3eaf4;border-radius:12px;overflow:hidden}
+  .flm-card-top{padding:10px 12px;border-bottom:1px solid #eef2f7}
+  .flm-metatags{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:6px}
+  .flm-empty{text-align:center;color:#94a3b8;font-size:14px;margin-top:40px;line-height:1.5}
+  .flm-mono{font-family:ui-monospace,SFMono-Regular,Menlo,monospace}
+</style>
+
+<script>
+/* =========================================================================
+   FLEMING - Widget web embebible - Fab Pharma / Mag-nifico
+   -------------------------------------------------------------------------
+   CONFIGURACION (edita este bloque al desplegar en tu plataforma web):
+   - recipientEmail : destino de los escalados.
+   - apiEndpoint    : DEJALO VACIO para probar dentro de Claude.ai.
+                      En PRODUCCION pon aqui la URL de TU backend/proxy que
+                      anade la API key de Anthropic en el servidor (NUNCA
+                      pongas la API key en este archivo del navegador).
+   ========================================================================= */
+var CONFIG = {
+  recipientEmail: "falbanelli.es@gmail.com",
+  webhookUrl: "",                  // <-- PEGA AQUI la URL del webhook de Make (envio automatico del email)
+  apiEndpoint: "",                 // ej: "https://tuservidor.com/api/fleming"
+  model: "claude-sonnet-4-6",
+  maxTokens: 1000
+};
+
+var ESCALATION_PHRASE = "Trasladare tu duda al Dpto. Cientifico, que te contactara cuanto antes";
+var META = "###META###";
+
+var CONTEXTO = [
+"DOCUMENTOS VALIDADOS:",
+"- [PUBLICO] PROSPECTO (citable como [Ref: Prospecto-SN])",
+"- [INTERNO/CONFIDENCIAL] Literatura interna de producto - usar para responder, NO citar",
+"- [INTERNO/CONFIDENCIAL] Dossier clinico CHRONOS-1 - usar para responder, NO citar",
+"",
+"=== PROSPECTO (PUBLICO) ===",
+"S1. QUE ES Y PARA QUE SE UTILIZA. Mag-nifico es un complemento alimenticio a base de magnesio (300 mg de magnesio elemental por dosis diaria) y vitamina B6 (1,4 mg), con tecnologia patentada ChronoSorb de liberacion bifasica (rapida liposomal + sostenida en matriz), para favorecer la absorcion del mineral y su tolerabilidad digestiva. El magnesio contribuye a: disminuir el cansancio y la fatiga; al funcionamiento normal del sistema nervioso y de los musculos; a la funcion psicologica normal; al equilibrio electrolitico. La vitamina B6 contribuye al funcionamiento normal del sistema nervioso y a la regulacion de la actividad hormonal. Indicado para adultos con estres, descanso insuficiente o sensacion de fatiga.",
+"S2. ANTES DE TOMAR. NO tomar si: alergia al magnesio, a la vitamina B6 o a algun componente; insuficiencia renal grave (salvo indicacion medica). No superar la dosis diaria; no sustituye una dieta equilibrada; mantener fuera del alcance de ninos; consultar al profesional sanitario en embarazo, lactancia, enfermedad renal o tratamiento medico. Uso con otros medicamentos: el magnesio puede reducir la absorcion de algunos antibioticos (tetraciclinas, quinolonas) y bifosfonatos; separar la toma al menos 2-3 horas; informar al medico/farmaceutico si usa diureticos u otros medicamentos habituales. Embarazo/lactancia: consultar antes de tomarlo. No afecta a conducir ni usar maquinas.",
+"S3. COMO TOMAR. Dosis: 2 capsulas al dia, juntas, preferiblemente con la cena, con un vaso de agua. No masticar. Para descanso, toma nocturna. Uso continuado sugerido de al menos 4-8 semanas. Sobredosis: exceso de magnesio puede producir molestias digestivas o heces blandas, leves y transitorias; suspender y consultar si persisten.",
+"S4. POSIBLES EFECTOS NO DESEADOS. Frecuencia baja de molestias digestivas gracias a ChronoSorb. Poco frecuentes: heces blandas, molestias gastrointestinales leves o nauseas. Suspender ante hipersensibilidad.",
+"S5. CONSERVACION. Lugar fresco y seco, por debajo de 25 C, protegido de luz y humedad. Envase bien cerrado. No usar tras la caducidad.",
+"S6. COMPOSICION. Por dosis diaria (2 caps.): Magnesio elemental (bisglicinato, L-treonato y oxido-hidroxido marino) 300 mg (80% VRN); Vitamina B6 (piridoxal-5-fosfato) 1,4 mg (100% VRN). Sin gluten, sin lactosa. Apto vegetarianos y veganos. Frasco de 60 capsulas vegetales gastrorresistentes (30 dosis). Patente ES 2 845 219 B2 / EP 4 187 902 A1.",
+"",
+"=== LITERATURA INTERNA (CONFIDENCIAL - no citar) ===",
+"ChronoSorb: sistema dual en capsula gastrorresistente. Fase rapida liposomal (bisglicinato + L-treonato, 180 mg) eleva la magnesemia en las primeras horas. Fase sostenida en matriz (Mg marino, 120 mg) cede el mineral de forma gradual, reduciendo la carga osmotica responsable del efecto laxante. La vitamina B6 favorece la captacion celular del magnesio. Datos internos: +45% absorcion vs bisglicinato estandar; 3% molestias digestivas; cobertura ~12 h. Casos de uso: estres sostenido; sueno de mala calidad; deportista/recuperacion; bienestar femenino (SPM, perimenopausia); adulto mayor activo. Resultados percibidos 2-4 semanas; reposicion de depositos 6-8 semanas. No recomendado en insuficiencia renal grave sin supervision. COMPLIANCE: ChronoSorb es ventaja de formulacion, NO indicacion. Prohibido atribuir prevencion/tratamiento/curacion de enfermedades. Hablar de bienestar, descanso y energia. Sin comparar con competidores.",
+"",
+"=== DOSSIER CLINICO CHRONOS-1 (CONFIDENCIAL - no citar) ===",
+"Ensayo aleatorizado 1:1, doble ciego, placebo, 130 adultos, 8 semanas, 300 mg/dia. Resultados vs placebo: PSQI -5,6 (vs -1,3); FAS -10,2 (vs -1,6); PSS-10 -8,7 (vs -1,6); magnesio eritrocitario +28,6% (vs +2,0%). Molestias GI 4,6% (vs 3,1%). Respondedores sueno 71% vs 27%. Sin eventos adversos graves."
+].join("\n");
+
+var SYSTEM_PROMPT =
+"Eres Fleming, asistente cientifico para equipos de farmacia del laboratorio Fab Pharma. Hablas en espanol, tono profesional y claro para mostrador.\n\n" +
+"METODO DE RAZONAMIENTO (INTERNO - NUNCA lo muestres al cliente):\n" +
+"1) Clasifica en UNA categoria: mecanismo_accion | posologia | seguridad_interacciones | conservacion | argumentario_venta | fuera_de_alcance.\n" +
+"2) RESPONDIBLE solo si la informacion esta EXPLICITA en la documentacion validada (CONTEXTO). Si no aparece, NO respondible.\n" +
+"3) RIESGO: marca riesgo 'alto' si la categoria es seguridad_interacciones, o si se pregunta por dosis/uso en embarazo, lactancia, enfermedad renal o medicacion cronica. En riesgo alto responde SOLO si es LITERAL en el CONTEXTO; ante duda, escala.\n\n" +
+"ACTUACION:\n" +
+"- RESPONDIBLE: responde fiel al corpus, sin anadir nada. Menos de 120 palabras. Si es ambigua, reformulala diciendo como la has entendido y respondela. Cita [Ref: Prospecto-SN] SOLO si procede del Prospecto (PUBLICO); nunca atribuyas datos internos. Termina con: 'Te ha resultado util esta respuesta?'.\n" +
+"- NO RESPONDIBLE: el mensaje al cliente debe ser EXACTAMENTE: '" + ESCALATION_PHRASE + "'. Nada mas.\n\n" +
+"FORMATO DE SALIDA OBLIGATORIO: primero el mensaje al cliente; despues, en una ULTIMA linea, el marcador " + META + " seguido de un JSON en una linea:\n" +
+META + '{"categoria":"<una de las 6>","respondible":true|false,"riesgo":"alto|medio|bajo","escala":true|false}\n' +
+"'escala' es true si y solo si la consulta NO es respondible. Nunca muestres el razonamiento ni el marcador al cliente.\n\n" +
+"CONTEXTO:\n" + CONTEXTO;
+
+var SUGERENCIAS = ["Como se toma Mag-nifico?","Para que sirve?","Tiene gluten o lactosa?","Cuando se notan los resultados?","Como se conserva?"];
+var CAT_LABEL = {mecanismo_accion:"Mecanismo de accion",posologia:"Posologia",seguridad_interacciones:"Seguridad / interacciones",conservacion:"Conservacion",argumentario_venta:"Argumentario de venta",fuera_de_alcance:"Fuera de alcance"};
+var RISK_STYLE = {alto:"background:#fdeceb;color:#c0392b",medio:"background:#fff4e0;color:#b97316",bajo:"background:#e0f2ef;color:#0d8a7a"};
+
+/* ---------- estado ---------- */
+var messages = [];
+var log = [];
+var farmacia = {nombre:"", email:""};
+var editId = true;
+var loading = false;
+
+var app = document.getElementById("fleming-app");
+
+/* ---------- helpers ---------- */
+function esc(s){ return String(s).replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;"); }
+function mdRender(txt){
+  var s = esc(txt);
+  s = s.replace(/\*\*([^*]+)\*\*/g,'<strong style="color:#0e2a5e">$1</strong>');
+  s = s.replace(/\[(Ref:[^\]]+)\]/g,'<span class="flm-ref">$1</span>');
+  return s;
+}
+function mailtoUrl(em){
+  return "mailto:"+em.to+"?subject="+encodeURIComponent(em.subject)+"&body="+encodeURIComponent(em.body);
+}
+function buildEmail(categoria, consulta){
+  var nombre = (farmacia.nombre||"").trim() || "[nombre Farmacia]";
+  var emailFarmacia = (farmacia.email||"").trim() || "[email farmacia]";
+  return {
+    to: CONFIG.recipientEmail,
+    subject: "Consulta Fleming - " + nombre,
+    body: "Email de farmacia: " + emailFarmacia + "\n" +
+          "Categoria: " + (CAT_LABEL[categoria]||categoria) + "\n" +
+          "Consulta: " + consulta + "\n\n" +
+          "- Generado automaticamente por Fleming (asistente cientifico - Fab Pharma)."
+  };
+}
+function postToMake(entry){
+  if(!CONFIG.webhookUrl) return Promise.reject(new Error("sin webhook"));
+  var payload = {
+    ticket_id: entry.ticket_id,
+    timestamp: entry.ts,
+    producto: "Mag-nifico",
+    farmacia_nombre: (farmacia.nombre||"").trim(),
+    farmacia_email: (farmacia.email||"").trim(),
+    categoria: entry.categoria,
+    categoria_label: CAT_LABEL[entry.categoria]||entry.categoria,
+    riesgo: entry.riesgo,
+    consulta: entry.consulta,
+    destinatario: entry.email.to,
+    asunto: entry.email.subject,
+    cuerpo: entry.email.body
+  };
+  // no-cors + text/plain evita el bloqueo CORS del webhook de Make;
+  // Make recibe y parsea el JSON del cuerpo igualmente.
+  return fetch(CONFIG.webhookUrl,{
+    method:"POST",
+    mode:"no-cors",
+    headers:{"Content-Type":"text/plain;charset=utf-8"},
+    body:JSON.stringify(payload)
+  });
+}
+
+/* ---------- estructura base ---------- */
+app.innerHTML =
+'<div class="flm-wrap">'+
+  '<div class="flm-header">'+
+    '<div class="flm-htop">'+
+      '<div class="flm-logo">'+
+        '<svg width="40" height="40" viewBox="0 0 48 48" fill="none">'+
+          '<path d="M24 4 L40.5 13.5 V32.5 L24 42 L7.5 32.5 V13.5 Z" stroke="#21b6a8" stroke-width="2" fill="rgba(255,255,255,.05)" stroke-linejoin="round"/>'+
+          '<g transform="rotate(-40 24 18)"><rect x="17" y="14.5" width="14" height="7.5" rx="3.75" fill="#fff"/><rect x="17" y="14.5" width="7" height="7.5" rx="3.75" fill="#21b6a8"/></g>'+
+          '<text x="24" y="35.5" text-anchor="middle" font-size="11" font-weight="800" fill="#fff" font-family="sans-serif">Mg</text>'+
+        '</svg>'+
+        '<div class="flm-brand"><div class="b1">FAB PHARMA</div><div class="b2">CIENCIA PARA TU BIENESTAR DIARIO</div></div>'+
+      '</div>'+
+      '<div class="flm-hbtns">'+
+        '<button class="flm-ico" id="flm-open-panel" title="Panel interno">&#128229;<span class="flm-badge" id="flm-badge" style="display:none">0</span></button>'+
+        '<button class="flm-ico" id="flm-reset" title="Reiniciar">&#8635;</button>'+
+      '</div>'+
+    '</div>'+
+    '<div class="flm-status"><span class="flm-dot"></span><span class="s1">Fleming</span><span class="s2">- Asistente cientifico - solo documentacion validada</span></div>'+
+  '</div>'+
+  '<div class="flm-idbar" id="flm-idbar"></div>'+
+  '<div class="flm-msgs" id="flm-msgs"></div>'+
+  '<div class="flm-sugg">'+
+    '<div class="flm-sugg-box"><p class="t">PREGUNTAS FRECUENTES</p><div class="flm-chips" id="flm-chips"></div></div>'+
+  '</div>'+
+  '<div class="flm-input">'+
+    '<input id="flm-text" placeholder="Escribe tu consulta de mostrador..." autocomplete="off"/>'+
+    '<button class="flm-send" id="flm-send">&#10148;</button>'+
+  '</div>'+
+  '<div class="flm-foot">Documento ficticio - uso academico. Fleming responde solo con documentacion validada de Fab Pharma.</div>'+
+  '<div id="flm-panel-mount"></div>'+
+'</div>';
+
+var msgsEl = document.getElementById("flm-msgs");
+var textEl = document.getElementById("flm-text");
+var sendBtn = document.getElementById("flm-send");
+var badgeEl = document.getElementById("flm-badge");
+
+/* ---------- barra farmacia ---------- */
+function renderIdBar(){
+  var bar = document.getElementById("flm-idbar");
+  if(editId){
+    bar.innerHTML = '<span>&#127973;</span>'+
+      '<input id="flm-fn" placeholder="Nombre de farmacia" value="'+esc(farmacia.nombre)+'"/>'+
+      '<input id="flm-fe" placeholder="Email de farmacia" value="'+esc(farmacia.email)+'"/>'+
+      '<button class="flm-idok" id="flm-idok">OK</button>';
+    document.getElementById("flm-fn").oninput = function(e){ farmacia.nombre = e.target.value; };
+    document.getElementById("flm-fe").oninput = function(e){ farmacia.email = e.target.value; };
+    document.getElementById("flm-idok").onclick = function(){ editId=false; renderIdBar(); };
+  } else {
+    var label = (farmacia.nombre.trim()||"Farmacia sin identificar") + (farmacia.email.trim()? " - "+farmacia.email.trim():"");
+    bar.innerHTML = '<span>&#127973;</span><span style="color:#475569">'+esc(label)+'</span><button class="flm-edit" id="flm-edit">Editar</button>';
+    document.getElementById("flm-edit").onclick = function(){ editId=true; renderIdBar(); };
+  }
+}
+
+/* ---------- chips ---------- */
+var chipsEl = document.getElementById("flm-chips");
+SUGERENCIAS.forEach(function(s){
+  var b=document.createElement("button"); b.className="flm-chip"; b.textContent=s;
+  b.onclick=function(){ if(!loading) send(s); };
+  chipsEl.appendChild(b);
+});
+
+/* ---------- mensajes ---------- */
+function addUser(text){
+  var row=document.createElement("div"); row.className="flm-row user";
+  row.innerHTML='<div class="flm-bubble user">'+esc(text)+'</div>';
+  msgsEl.appendChild(row); scrollDown();
+}
+function addBot(text, escalated){
+  var wrap=document.createElement("div");
+  var row=document.createElement("div"); row.className="flm-row bot";
+  row.innerHTML='<div class="flm-bubble '+(escalated?'esc':'bot')+'">'+mdRender(text)+'</div>';
+  wrap.appendChild(row);
+  if(text.indexOf("Hola, soy")!==0){
+    var fb=document.createElement("div"); fb.className="flm-fb";
+    fb.innerHTML = (escalated?'<span class="flm-tag" style="background:#fff1df;color:#b97316">Escalado -> email + CRM</span>':'')
+      + '<span>Util?</span><button data-v="up">&#128077;</button><button data-v="down">&#128078;</button><span class="flm-thanks" style="display:none">Gracias!</span>';
+    var thanks=fb.querySelector(".flm-thanks");
+    var btns=fb.querySelectorAll("button");
+    for(var i=0;i<btns.length;i++){ btns[i].onclick=function(){ thanks.style.display="inline"; }; }
+    wrap.appendChild(fb);
+  }
+  msgsEl.appendChild(wrap); scrollDown();
+}
+function addEmailCard(email){
+  var card=document.createElement("div"); card.className="flm-email-card";
+  var autosend = !!CONFIG.webhookUrl;
+  card.innerHTML=
+    '<div class="flm-email-head">&#128231; Correo para el Dpto. Cientifico</div>'+
+    '<div class="flm-email-body">'+
+      '<div><span class="lbl">Para:</span> '+esc(email.to)+'</div>'+
+      '<div><span class="lbl">Asunto:</span> '+esc(email.subject)+'</div>'+
+      '<div class="txt">'+esc(email.body)+'</div>'+
+      '<div class="flm-sendstatus" style="margin-top:8px;font-weight:600;color:#94a3b8">'+(autosend?'&#8987; Enviando automaticamente...':'&#9755; Pulsa "Enviar correo" (o configura el webhook de Make para envio automatico)')+'</div>'+
+    '</div>'+
+    '<div class="flm-email-actions">'+
+      '<a class="flm-btn-primary" href="'+mailtoUrl(email)+'" target="_blank" rel="noopener">&#128231; Enviar correo</a>'+
+      '<button class="flm-btn-soft">&#128203; Copiar</button>'+
+    '</div>';
+  var copyBtn=card.querySelector(".flm-btn-soft");
+  copyBtn.onclick=function(){
+    var t="Para: "+email.to+"\nAsunto: "+email.subject+"\n\n"+email.body;
+    if(navigator.clipboard) navigator.clipboard.writeText(t);
+    copyBtn.innerHTML="&#10003; Copiado"; setTimeout(function(){copyBtn.innerHTML="&#128203; Copiar";},1500);
+  };
+  var sendA=card.querySelector(".flm-btn-primary");
+  sendA.addEventListener("click",function(){ try{ window.open(mailtoUrl(email),"_blank"); }catch(e){} });
+  msgsEl.appendChild(card); scrollDown();
+  return card;
+}
+function addTyping(){
+  var t=document.createElement("div"); t.className="flm-row bot"; t.id="flm-typing";
+  t.innerHTML='<div class="flm-typing"><span></span><span></span><span></span></div>';
+  msgsEl.appendChild(t); scrollDown();
+}
+function rmTyping(){ var t=document.getElementById("flm-typing"); if(t) t.remove(); }
+function scrollDown(){ msgsEl.scrollTop=msgsEl.scrollHeight; }
+
+/* ---------- badge / panel ---------- */
+function refreshBadge(){
+  var n=0; for(var i=0;i<log.length;i++){ if(log[i].escala) n++; }
+  badgeEl.textContent=n; badgeEl.style.display = n>0?"flex":"none";
+}
+function openPanel(){
+  var mount=document.getElementById("flm-panel-mount");
+  var rows;
+  if(log.length){
+    rows = log.map(function(e){
+      var tags='<div class="flm-metatags">'+
+        '<span class="flm-tag" style="background:#eef4fb;color:#16407e">'+(CAT_LABEL[e.categoria]||e.categoria)+'</span>'+
+        '<span class="flm-tag" style="'+(e.respondible?'background:#e0f2ef;color:#0d8a7a':'background:#fdeceb;color:#c0392b')+'">'+(e.respondible?'respondible':'no respondible')+'</span>'+
+        '<span class="flm-tag" style="'+(RISK_STYLE[e.riesgo]||RISK_STYLE.bajo)+'">riesgo '+e.riesgo+'</span>'+
+      '</div>';
+      var emailBlock = (e.escala&&e.email)?
+        '<div style="padding:10px 12px;background:#fafcff">'+
+          '<div style="display:flex;align-items:center;gap:6px;margin-bottom:6px;color:#16407e;font-size:12px;font-weight:600">&#128231; Email generado</div>'+
+          '<div class="flm-mono" style="font-size:11px;color:#334155">'+
+            '<div><span style="color:#94a3b8">Para:</span> '+esc(e.email.to)+'</div>'+
+            '<div><span style="color:#94a3b8">Asunto:</span> '+esc(e.email.subject)+'</div>'+
+            '<div style="white-space:pre-wrap;margin-top:4px">'+esc(e.email.body)+'</div>'+
+          '</div>'+
+          '<div style="display:flex;gap:8px;margin-top:10px"><a class="flm-btn-primary" href="'+mailtoUrl(e.email)+'" target="_blank" rel="noopener">&#128231; Abrir en correo</a></div>'+
+        '</div>':'';
+      return '<div class="flm-card"><div class="flm-card-top">'+tags+'<div style="font-size:12px;color:#475569"><span style="color:#94a3b8">Consulta:</span> '+esc(e.consulta)+'</div></div>'+emailBlock+'</div>';
+    }).join("");
+  } else {
+    rows = '<div class="flm-empty">Aqui se registra la accion interna de cada consulta (categoria - respondible - riesgo). Cuando escala, se genera el email al Dpto. Cientifico.</div>';
+  }
+  mount.innerHTML='<div class="flm-overlay" id="flm-ov">'+
+    '<div class="flm-panel">'+
+      '<div class="flm-panel-head"><span style="font-weight:600;font-size:14px">&#128229; Accion interna - registro de turnos</span><button class="x" id="flm-close">&#10005;</button></div>'+
+      '<div class="flm-panel-body">'+rows+'</div>'+
+    '</div>'+
+  '</div>';
+  document.getElementById("flm-ov").onclick=function(e){ if(e.target.id==="flm-ov") mount.innerHTML=""; };
+  document.getElementById("flm-close").onclick=function(){ mount.innerHTML=""; };
+}
+
+/* ---------- envio ---------- */
+function send(text){
+  var q=(text!=null?text:textEl.value).trim();
+  if(!q||loading) return;
+  editId=false; renderIdBar();
+  addUser(q);
+  messages.push({role:"user",content:q});
+  textEl.value=""; loading=true; sendBtn.disabled=true; addTyping();
+
+  var history=messages.map(function(m){ return {role:m.role,content:m.content.split(META)[0].trim()}; });
+  var endpoint = CONFIG.apiEndpoint || "https://api.anthropic.com/v1/messages";
+
+  fetch(endpoint,{
+    method:"POST",
+    headers:{"Content-Type":"application/json"},
+    body:JSON.stringify({model:CONFIG.model,max_tokens:CONFIG.maxTokens,system:SYSTEM_PROMPT,messages:history})
+  }).then(function(res){ return res.json(); }).then(function(data){
+    var blocks=(data.content||[]).filter(function(i){return i.type==="text";}).map(function(i){return i.text;});
+    var raw=(blocks.join("\n").trim())||ESCALATION_PHRASE;
+
+    var parts=raw.split(META);
+    var clientText=(parts[0]||"").trim();
+    var meta=null; if(parts[1]){ try{ meta=JSON.parse(parts[1].trim()); }catch(e){} }
+    var escala = meta? !!meta.escala : clientText.indexOf(ESCALATION_PHRASE)!==-1;
+    var categoria = (meta&&meta.categoria)||(escala?"fuera_de_alcance":"posologia");
+    var riesgo = (meta&&meta.riesgo)||(categoria==="seguridad_interacciones"?"alto":"bajo");
+    var respondible = meta? !!meta.respondible : !escala;
+
+    rmTyping();
+    messages.push({role:"assistant",content:clientText});
+    addBot(clientText, escala);
+
+    var email = escala? buildEmail(categoria,q) : null;
+    var entry = {ticket_id:"FLM-"+Date.now(), ts:new Date().toISOString(), consulta:q, categoria:categoria, respondible:respondible, riesgo:riesgo, escala:escala, email:email};
+    if(escala && email){
+      var card = addEmailCard(email);
+      var status = card.querySelector(".flm-sendstatus");
+      if(CONFIG.webhookUrl){
+        postToMake(entry).then(function(){
+          status.innerHTML="&#10003; Enviado al Dpto. Cientifico (via Make)"; status.style.color="#0d8a7a";
+        }).catch(function(){
+          status.innerHTML="&#9888; No se pudo enviar automaticamente. Usa 'Enviar correo'."; status.style.color="#c0392b";
+        });
+      }
+    }
+    log.unshift(entry);
+    refreshBadge();
+  }).catch(function(err){
+    rmTyping();
+    addBot("Ha ocurrido un error de conexion. Intentalo de nuevo en un momento.", false);
+  }).then(function(){
+    loading=false; sendBtn.disabled=false;
+  });
+}
+
+/* ---------- eventos ---------- */
+sendBtn.onclick=function(){ send(); };
+textEl.addEventListener("keydown",function(e){ if(e.key==="Enter") send(); });
+document.getElementById("flm-open-panel").onclick=openPanel;
+document.getElementById("flm-reset").onclick=function(){
+  messages=[]; log=[]; refreshBadge(); msgsEl.innerHTML="";
+  addBot("Hola, soy **Fleming**, tu asistente cientifico de Fab Pharma para Mag-nifico. Preguntame sobre composicion, posologia, tolerabilidad o uso. Respondo solo con documentacion validada.", false);
+};
+
+/* ---------- init ---------- */
+renderIdBar();
+addBot("Hola, soy **Fleming**, tu asistente cientifico de Fab Pharma para Mag-nifico. Preguntame sobre composicion, posologia, tolerabilidad o uso. Respondo solo con documentacion validada.", false);
+</script>

@@ -1,0 +1,483 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Fleming · Plataforma formativa — Mag-nifico®</title>
+<style>
+  :root{
+    --navy:#081a45; --navy2:#0d2a63; --blue:#16407e; --teal:#21b6a8;
+    --bg:#eef3fa; --card:#ffffff; --line:#dbe4f0; --ink:#1f2937; --muted:#64748b;
+    --ok:#0d8a7a; --warn:#c0392b;
+  }
+  *{box-sizing:border-box;font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif}
+  html,body{margin:0;height:100%}
+  body{background:var(--bg);color:var(--ink)}
+  button{font-family:inherit}
+  .hidden{display:none !important}
+
+  /* ---------- LOGIN ---------- */
+  #login{min-height:100vh;display:flex;align-items:center;justify-content:center;
+    background:radial-gradient(1200px 600px at 50% -10%,#16407e 0%,#0d2a63 45%,#081a45 100%);padding:24px}
+  .login-card{width:100%;max-width:400px;background:#fff;border-radius:18px;padding:34px 30px;
+    box-shadow:0 30px 70px rgba(8,26,69,.45)}
+  .brand{display:flex;align-items:center;gap:12px;margin-bottom:6px}
+  .brand .mark{width:46px;height:46px;border-radius:12px;background:linear-gradient(135deg,#16407e,#21b6a8);
+    display:flex;align-items:center;justify-content:center;color:#fff;font-weight:800;font-size:20px}
+  .brand .bt1{font-weight:800;font-size:20px;letter-spacing:.5px;color:var(--navy)}
+  .brand .bt2{font-size:10px;letter-spacing:.2em;color:var(--muted);margin-top:2px}
+  .login-sub{color:var(--muted);font-size:13px;margin:14px 0 22px}
+  .field{margin-bottom:14px}
+  .field label{display:block;font-size:12px;font-weight:600;color:#334155;margin-bottom:6px}
+  .field input{width:100%;padding:12px 14px;border:1px solid var(--line);border-radius:10px;font-size:14px;outline:none;background:#f7fafd}
+  .field input:focus{border-color:var(--blue);background:#fff}
+  .login-btn{width:100%;margin-top:8px;padding:13px;border:none;border-radius:10px;cursor:pointer;
+    background:linear-gradient(90deg,#16407e,#0d2a63);color:#fff;font-weight:700;font-size:15px}
+  .login-btn:hover{filter:brightness(1.08)}
+  .login-err{color:var(--warn);font-size:13px;margin-top:12px;min-height:18px;text-align:center}
+  .login-hint{margin-top:18px;font-size:11px;color:var(--muted);text-align:center;line-height:1.6}
+
+  /* ---------- APP SHELL ---------- */
+  #app{min-height:100vh;display:flex;flex-direction:column}
+  .topbar{background:linear-gradient(90deg,#081a45 0%,#0d2a63 50%,#16407e 100%);color:#fff;
+    padding:14px 22px;display:flex;align-items:center;justify-content:space-between;box-shadow:0 4px 18px rgba(8,26,69,.25)}
+  .topbar .brand .bt1{color:#fff}.topbar .brand .bt2{color:#9fc0ee}
+  .topbar .mark{background:rgba(255,255,255,.14)}
+  .user-chip{display:flex;align-items:center;gap:10px;font-size:13px}
+  .user-chip .who{background:rgba(255,255,255,.12);padding:6px 12px;border-radius:20px}
+  .logout{background:rgba(255,255,255,.12);border:none;color:#cfe0f7;padding:8px 14px;border-radius:8px;cursor:pointer;font-size:13px}
+  .logout:hover{background:rgba(255,255,255,.22)}
+
+  main{flex:1;max-width:1040px;margin:0 auto;width:100%;padding:30px 22px 90px}
+  .page-title{font-size:22px;font-weight:800;color:var(--navy);margin:6px 0 4px}
+  .page-sub{color:var(--muted);font-size:14px;margin-bottom:24px}
+
+  .grid{display:grid;grid-template-columns:1fr;gap:20px}
+  @media(min-width:820px){.grid{grid-template-columns:1.4fr .9fr}}
+
+  .card{background:var(--card);border:1px solid var(--line);border-radius:16px;overflow:hidden;box-shadow:0 12px 30px rgba(8,26,69,.07)}
+  .card-head{padding:16px 20px;border-bottom:1px solid #eef2f7;display:flex;align-items:center;gap:12px}
+  .card-head .ic{width:40px;height:40px;border-radius:11px;background:#e7f0fb;color:var(--blue);display:flex;align-items:center;justify-content:center;font-size:20px}
+  .card-head .ct1{font-weight:700;font-size:15px;color:var(--navy)}
+  .card-head .ct2{font-size:12px;color:var(--muted);margin-top:2px}
+  .card-body{padding:20px}
+
+  .video-frame{position:relative;background:#000;border-radius:12px;overflow:hidden;aspect-ratio:16/9}
+  .video-frame video{width:100%;height:100%;display:block}
+  .video-note{margin-top:12px;font-size:12px;color:var(--muted);display:flex;align-items:center;gap:8px}
+  .pill-state{display:inline-flex;align-items:center;gap:6px;font-size:11px;font-weight:600;padding:4px 10px;border-radius:12px}
+  .st-locked{background:#fff4e5;color:#a15c00}
+  .st-done{background:#e0f5f0;color:var(--ok)}
+
+  .side-card .card-body{display:flex;flex-direction:column;gap:14px}
+  .mini{display:flex;gap:12px;align-items:flex-start}
+  .mini .dot{width:26px;height:26px;border-radius:50%;background:var(--blue);color:#fff;font-size:12px;font-weight:700;display:flex;align-items:center;justify-content:center;flex-shrink:0}
+  .mini .mt{font-size:13px;color:#334155;line-height:1.45}
+  .mini .mt b{color:var(--navy)}
+  .cta{margin-top:4px;padding:12px;border:none;border-radius:10px;background:var(--blue);color:#fff;font-weight:700;cursor:pointer;font-size:14px}
+  .cta:hover{filter:brightness(1.08)}
+  .cta.ghost{background:#e7f0fb;color:var(--blue)}
+  .cta:disabled{opacity:.5;cursor:not-allowed}
+
+  /* ---------- CHATBOT FAB + MODAL ---------- */
+  .fab{position:fixed;right:26px;bottom:26px;z-index:40;width:auto;padding:14px 20px;border-radius:30px;border:none;cursor:pointer;
+    background:linear-gradient(135deg,#16407e,#21b6a8);color:#fff;font-weight:700;font-size:14px;display:flex;align-items:center;gap:10px;
+    box-shadow:0 14px 34px rgba(8,26,69,.4)}
+  .fab:hover{filter:brightness(1.08)}
+
+  .overlay{position:fixed;inset:0;background:rgba(8,26,69,.55);backdrop-filter:blur(3px);z-index:50;
+    display:flex;align-items:center;justify-content:center;padding:20px}
+  .modal{background:#fff;border-radius:18px;width:100%;max-width:680px;max-height:92vh;overflow:hidden;display:flex;flex-direction:column;
+    box-shadow:0 40px 90px rgba(8,26,69,.5);animation:pop .22s ease}
+  @keyframes pop{from{transform:scale(.94);opacity:0}to{transform:scale(1);opacity:1}}
+  .modal-head{padding:16px 20px;background:linear-gradient(90deg,#081a45,#16407e);color:#fff;display:flex;align-items:center;justify-content:space-between}
+  .modal-head .mh1{font-weight:700;font-size:16px}
+  .modal-head .mh2{font-size:12px;color:#9fc0ee;margin-top:2px}
+  .modal-head .x{background:rgba(255,255,255,.14);border:none;color:#fff;width:34px;height:34px;border-radius:9px;cursor:pointer;font-size:16px}
+  .modal-body{padding:22px;overflow-y:auto}
+  .chat-modal{max-width:660px}
+  .chat-modal .modal-body{padding:0}
+  .chat-modal iframe{width:100%;height:740px;border:none;display:block}
+
+  /* ---------- TEST ---------- */
+  .q{margin-bottom:20px;padding-bottom:18px;border-bottom:1px solid #eef2f7}
+  .q:last-of-type{border-bottom:none}
+  .q .qh{font-weight:700;font-size:14px;color:var(--navy);margin-bottom:10px}
+  .q .qh .num{display:inline-flex;width:22px;height:22px;border-radius:50%;background:var(--blue);color:#fff;font-size:12px;align-items:center;justify-content:center;margin-right:8px}
+  .opt{display:flex;align-items:center;gap:10px;padding:10px 12px;border:1px solid var(--line);border-radius:10px;margin-bottom:8px;cursor:pointer;font-size:13px;transition:.12s}
+  .opt:hover{border-color:var(--blue);background:#f7fafd}
+  .opt input{accent-color:var(--blue)}
+  .opt.sel{border-color:var(--blue);background:#eef4fb}
+  .opt.correct{border-color:var(--ok);background:#e6f7f2}
+  .opt.wrong{border-color:var(--warn);background:#fdecea}
+  .opt .letter{font-weight:700;color:var(--blue);width:16px}
+  .test-farma{margin-bottom:20px}
+  .test-farma label{display:block;font-size:12px;font-weight:600;color:#334155;margin-bottom:6px}
+  .test-farma input{width:100%;padding:11px 13px;border:1px solid var(--line);border-radius:10px;font-size:14px;outline:none;background:#f7fafd}
+  .test-farma input:focus{border-color:var(--blue);background:#fff}
+  .test-actions{display:flex;gap:10px;margin-top:6px}
+  .test-msg{font-size:13px;color:var(--warn);margin-top:10px;min-height:18px}
+
+  /* ---------- DISCOUNT POPUP ---------- */
+  .disc{text-align:center}
+  .disc .badge-big{width:130px;height:130px;border-radius:50%;margin:6px auto 14px;display:flex;flex-direction:column;align-items:center;justify-content:center;color:#fff;box-shadow:0 16px 40px rgba(8,26,69,.28)}
+  .disc .badge-big.win{background:linear-gradient(135deg,#16407e,#21b6a8)}
+  .disc .badge-big.fail{background:linear-gradient(135deg,#7b8794,#4b5563)}
+  .disc .badge-big .pct{font-size:38px;font-weight:800;line-height:1}
+  .disc .badge-big .plbl{font-size:11px;letter-spacing:.12em;margin-top:4px;opacity:.9}
+  .disc h2{font-size:20px;color:var(--navy);margin:4px 0 6px}
+  .disc .dsum{color:var(--muted);font-size:14px;margin-bottom:16px;line-height:1.5}
+  .disc .score-pills{display:flex;justify-content:center;gap:8px;flex-wrap:wrap;margin-bottom:18px}
+  .disc .score-pills span{font-size:12px;padding:6px 12px;border-radius:20px;background:#eef4fb;color:var(--blue);font-weight:600}
+  .disc .score-pills span.no{background:#fdecea;color:var(--warn)}
+  .disc .score-pills span.yes{background:#e6f7f2;color:var(--ok)}
+  .code-box{background:#f7fafd;border:1px dashed var(--blue);border-radius:12px;padding:14px;margin-bottom:16px}
+  .code-box .cl{font-size:11px;color:var(--muted);letter-spacing:.1em}
+  .code-box .cc{font-size:22px;font-weight:800;color:var(--navy);letter-spacing:.15em;font-family:ui-monospace,Menlo,monospace}
+  details.crm{text-align:left;margin-bottom:14px;border:1px solid var(--line);border-radius:10px;overflow:hidden}
+  details.crm summary{cursor:pointer;padding:10px 14px;font-size:12px;font-weight:600;color:var(--blue);background:#f7fafd}
+  details.crm pre{margin:0;padding:14px;background:#0d1b3e;color:#cfe0f7;font-size:11px;overflow-x:auto;line-height:1.5}
+  .disc .dact{display:flex;gap:10px;justify-content:center;flex-wrap:wrap}
+</style>
+</head>
+<body>
+
+<!-- ================= LOGIN ================= -->
+<section id="login">
+  <div class="login-card">
+    <div class="brand">
+      <div class="mark">F</div>
+      <div>
+        <div class="bt1">FLEMING</div>
+        <div class="bt2">FAB PHARMA · FORMACIÓN</div>
+      </div>
+    </div>
+    <div class="login-sub">Plataforma formativa de producto. Accede con las credenciales facilitadas.</div>
+    <form id="loginForm" autocomplete="off">
+      <div class="field">
+        <label for="u">Usuario</label>
+        <input id="u" type="text" placeholder="Usuario" autocomplete="off">
+      </div>
+      <div class="field">
+        <label for="p">Contraseña</label>
+        <input id="p" type="password" placeholder="Contraseña" autocomplete="off">
+      </div>
+      <button class="login-btn" type="submit">Entrar</button>
+      <div class="login-err" id="loginErr"></div>
+    </form>
+    <div class="login-hint">Acceso restringido · Mag-nifico® · Proyecto Fleming</div>
+  </div>
+</section>
+
+<!-- ================= APP ================= -->
+<section id="app" class="hidden">
+  <div class="topbar">
+    <div class="brand">
+      <div class="mark">F</div>
+      <div><div class="bt1">FLEMING</div><div class="bt2">FAB PHARMA · FORMACIÓN</div></div>
+    </div>
+    <div class="user-chip">
+      <div class="who">👤 <span id="whoName">Esade</span></div>
+      <button class="logout" id="logoutBtn">Salir</button>
+    </div>
+  </div>
+
+  <main>
+    <div class="page-title">Píldora formativa · Mag-nifico®</div>
+    <div class="page-sub">Visualiza la píldora completa. Al finalizar se activará automáticamente el test de comprensión.</div>
+
+    <div class="grid">
+      <!-- Píldora -->
+      <div class="card">
+        <div class="card-head">
+          <div class="ic">🎬</div>
+          <div>
+            <div class="ct1">Píldora de producto — Mag-nifico®</div>
+            <div class="ct2">Formación audiovisual · duración de la reproducción</div>
+          </div>
+        </div>
+        <div class="card-body">
+          <div class="video-frame">
+            <video id="pildora" controls controlsList="nodownload" preload="metadata" playsinline>
+              <source src="pildora.mp4" type="video/mp4">
+              Tu navegador no soporta la reproducción de vídeo.
+            </video>
+          </div>
+          <div class="video-note">
+            <span class="pill-state st-locked" id="pillState">🔒 Test bloqueado hasta finalizar</span>
+            <span>El test se abre solo al terminar la reproducción.</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Flujo / acciones -->
+      <div class="card side-card">
+        <div class="card-head">
+          <div class="ic">🧭</div>
+          <div>
+            <div class="ct1">Tu recorrido</div>
+            <div class="ct2">3 pasos para conseguir tu descuento</div>
+          </div>
+        </div>
+        <div class="card-body">
+          <div class="mini"><div class="dot">1</div><div class="mt"><b>Visualiza la píldora</b> completa de Mag-nifico®.</div></div>
+          <div class="mini"><div class="dot">2</div><div class="mt"><b>Responde el test</b> de 5 preguntas (se abre automáticamente).</div></div>
+          <div class="mini"><div class="dot">3</div><div class="mt"><b>Consigue tu descuento</b> para el próximo pedido según tu resultado.</div></div>
+          <button class="cta ghost" id="openTestBtn" disabled>📝 Abrir test de comprensión</button>
+          <button class="cta" id="openChatBtn2">💬 Consultar al asistente Fleming</button>
+        </div>
+      </div>
+    </div>
+  </main>
+
+  <button class="fab" id="chatFab">💬 Asistente Fleming</button>
+</section>
+
+<!-- ================= CHATBOT MODAL ================= -->
+<div class="overlay hidden" id="chatOverlay">
+  <div class="modal chat-modal">
+    <div class="modal-head">
+      <div><div class="mh1">Asistente científico Fleming</div><div class="mh2">Fab Pharma · Mag-nifico®</div></div>
+      <button class="x" id="closeChat">✕</button>
+    </div>
+    <div class="modal-body">
+      <iframe id="chatFrame" title="Chatbot Fleming"></iframe>
+    </div>
+  </div>
+</div>
+
+<!-- ================= TEST MODAL ================= -->
+<div class="overlay hidden" id="testOverlay">
+  <div class="modal">
+    <div class="modal-head">
+      <div><div class="mh1">Test de comprensión · Mag-nifico®</div><div class="mh2">5 preguntas · basado en la píldora</div></div>
+      <button class="x" id="closeTest">✕</button>
+    </div>
+    <div class="modal-body">
+      <div class="test-farma">
+        <label for="farmaName">Nombre de la farmacia</label>
+        <input id="farmaName" type="text" placeholder="Ej.: Farmacia Central" value="Farmacia Esade">
+      </div>
+      <div id="questions"></div>
+      <div class="test-msg" id="testMsg"></div>
+      <div class="test-actions">
+        <button class="cta" id="submitTest" style="flex:1">Corregir y ver descuento</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ================= DISCOUNT MODAL ================= -->
+<div class="overlay hidden" id="discOverlay">
+  <div class="modal">
+    <div class="modal-head">
+      <div><div class="mh1">Resultado del test</div><div class="mh2">Descuento para tu próximo pedido</div></div>
+      <button class="x" id="closeDisc">✕</button>
+    </div>
+    <div class="modal-body">
+      <div class="disc" id="discContent"></div>
+    </div>
+  </div>
+</div>
+
+<script>
+/* ================= CONFIG ================= */
+var CREDS = { user: "Esade", pass: "Fleming" };
+
+/* Test: preguntas y respuesta correcta (índice 0-3). Fuente: guion de la píldora (Anexo 3). */
+var QUESTIONS = [
+  { q:"¿Cuál es la posología recomendada de Mag-nifico®?",
+    o:["1 cápsula al día en ayunas",
+       "2 cápsulas al día, juntas, preferiblemente con la cena",
+       "3 cápsulas repartidas a lo largo del día",
+       "2 cápsulas al día, una por la mañana y otra por la noche"], c:1 },
+  { q:"¿En qué consiste la tecnología ChronoSorb®?",
+    o:["Un recubrimiento que acelera toda la absorción en la primera hora",
+       "Una fórmula efervescente de disolución inmediata",
+       "Un sistema patentado de liberación bifásica (fase rápida liposomal + fase sostenida en matriz)",
+       "Un sistema de liberación retardada en una única fase"], c:2 },
+  { q:"¿Durante cuánto tiempo se recomienda un uso continuado?",
+    o:["1 a 2 semanas","2 a 3 semanas","Al menos 4 a 8 semanas","12 a 24 semanas"], c:2 },
+  { q:"Además del magnesio, ¿qué nutriente incorpora y con qué función según el guion?",
+    o:["Vitamina D, para los huesos",
+       "Vitamina B6, que acompaña al magnesio en el sistema nervioso",
+       "Zinc, para las defensas",
+       "Hierro, para la energía"], c:1 },
+  { q:"¿Qué recomendación de interacción debe darse en el mostrador?",
+    o:["Tomarlo siempre en ayunas",
+       "Separar la toma 2 a 3 horas de ciertos antibióticos o bifosfonatos",
+       "No combinarlo nunca con alimentos",
+       "Evitarlo junto con cualquier vitamina"], c:1 }
+];
+
+/* Tabla de descuentos (Anexo 4):
+   0-2 -> no superado, 0%  |  3 -> superado, 0%  |  4 -> superado, 10%  |  5 -> superado, 15% */
+function evaluar(aciertos){
+  if(aciertos<=2) return {superado:false, pct:0};
+  if(aciertos===3) return {superado:true, pct:0};
+  if(aciertos===4) return {superado:true, pct:10};
+  return {superado:true, pct:15};
+}
+
+/* ================= HELPERS ================= */
+var $ = function(id){ return document.getElementById(id); };
+var pildoraCompletada = false;
+
+/* ================= LOGIN ================= */
+$("loginForm").addEventListener("submit", function(e){
+  e.preventDefault();
+  var u = $("u").value.trim(), p = $("p").value;
+  if(u.toLowerCase()===CREDS.user.toLowerCase() && p===CREDS.pass){
+    $("whoName").textContent = CREDS.user;
+    $("login").classList.add("hidden");
+    $("app").classList.remove("hidden");
+    $("loginErr").textContent = "";
+  } else {
+    $("loginErr").textContent = "Usuario o contraseña incorrectos.";
+    $("p").value = "";
+  }
+});
+$("logoutBtn").addEventListener("click", function(){
+  $("app").classList.add("hidden");
+  $("login").classList.remove("hidden");
+  $("u").value=""; $("p").value="";
+  var v=$("pildora"); v.pause();
+});
+
+/* ================= CHATBOT ================= */
+function openChat(){
+  var f=$("chatFrame");
+  if(!f.getAttribute("src")) f.setAttribute("src","chatbot.html");
+  $("chatOverlay").classList.remove("hidden");
+}
+function closeChat(){ $("chatOverlay").classList.add("hidden"); }
+$("chatFab").addEventListener("click", openChat);
+$("openChatBtn2").addEventListener("click", openChat);
+$("closeChat").addEventListener("click", closeChat);
+
+/* ================= PÍLDORA -> auto test ================= */
+$("pildora").addEventListener("ended", function(){
+  pildoraCompletada = true;
+  $("pillState").className = "pill-state st-done";
+  $("pillState").textContent = "✅ Píldora completada";
+  $("openTestBtn").disabled = false;
+  openTest();
+});
+$("openTestBtn").addEventListener("click", function(){ if(!this.disabled) openTest(); });
+
+/* ================= TEST ================= */
+function renderQuestions(){
+  var html="";
+  QUESTIONS.forEach(function(item, qi){
+    html += '<div class="q" data-q="'+qi+'"><div class="qh"><span class="num">'+(qi+1)+'</span>'+item.q+'</div>';
+    item.o.forEach(function(opt, oi){
+      var letter=String.fromCharCode(97+oi);
+      html += '<label class="opt" data-q="'+qi+'" data-o="'+oi+'">'+
+              '<input type="radio" name="q'+qi+'" value="'+oi+'">'+
+              '<span class="letter">'+letter+')</span><span>'+opt+'</span></label>';
+    });
+    html += '</div>';
+  });
+  $("questions").innerHTML = html;
+  Array.prototype.forEach.call(document.querySelectorAll('.opt'), function(el){
+    el.addEventListener("click", function(){
+      var qi=this.getAttribute("data-q");
+      Array.prototype.forEach.call(document.querySelectorAll('.opt[data-q="'+qi+'"]'), function(o){o.classList.remove("sel");});
+      this.classList.add("sel");
+    });
+  });
+}
+function openTest(){
+  renderQuestions();
+  $("testMsg").textContent="";
+  $("submitTest").disabled=false;
+  $("testOverlay").classList.remove("hidden");
+}
+function closeTest(){ $("testOverlay").classList.add("hidden"); }
+$("closeTest").addEventListener("click", closeTest);
+
+$("submitTest").addEventListener("click", function(){
+  var respuestas=[], faltan=false;
+  QUESTIONS.forEach(function(item, qi){
+    var sel=document.querySelector('input[name="q'+qi+'"]:checked');
+    respuestas.push(sel? parseInt(sel.value,10) : -1);
+    if(!sel) faltan=true;
+  });
+  if(faltan){ $("testMsg").textContent="Responde todas las preguntas antes de corregir."; return; }
+  var farma=$("farmaName").value.trim() || "Farmacia (sin nombre)";
+
+  var aciertos=0;
+  QUESTIONS.forEach(function(item, qi){
+    var sel=respuestas[qi];
+    var optEls=document.querySelectorAll('.opt[data-q="'+qi+'"]');
+    if(sel===item.c) aciertos++;
+    optEls[item.c].classList.add("correct");
+    if(sel!==item.c && sel>=0) optEls[sel].classList.add("wrong");
+  });
+  $("submitTest").disabled=true;
+  var res=evaluar(aciertos);
+  showDiscount(farma, aciertos, res);
+});
+
+/* ================= DESCUENTO ================= */
+function showDiscount(farma, aciertos, res){
+  var code = res.pct>0 ? "MAG"+res.pct+"-"+Math.random().toString(36).slice(2,6).toUpperCase() : null;
+  var respLetras = QUESTIONS.map(function(item,qi){
+    var sel=document.querySelector('input[name="q'+qi+'"]:checked');
+    return (qi+1)+String.fromCharCode(97+parseInt(sel.value,10));
+  }).join(", ");
+
+  var crm = {
+    farmacia: farma,
+    producto: "Mag-nifico®",
+    aciertos: aciertos + "/5",
+    respuestas: respLetras,
+    test_superado: res.superado ? "SI" : "NO",
+    descuento_pct: res.pct,
+    codigo_descuento: code,
+    accion_crm: res.pct>0 ? "ACTIVAR_DESCUENTO" : (res.superado ? "REGISTRAR_SUPERADO_SIN_DESCUENTO" : "NO_SUPERADO"),
+    fecha: new Date().toISOString()
+  };
+
+  var win = res.superado;
+  var html = ''+
+    '<div class="badge-big '+(win?"win":"fail")+'">'+
+      '<div class="pct">'+res.pct+'%</div><div class="plbl">DESCUENTO</div></div>'+
+    '<h2>'+(win? "¡Test superado!" : "Test no superado")+'</h2>'+
+    '<div class="dsum">'+
+      (win
+        ? (res.pct>0
+            ? "Enhorabuena, "+farma+". Has conseguido un <b>"+res.pct+"% de descuento</b> para tu próximo pedido de Mag-nifico®."
+            : "Has superado el test, "+farma+", pero no alcanzas descuento. Necesitas <b>4 aciertos</b> para el 10%.")
+        : "No has alcanzado el mínimo para superar el test. Repasa la píldora y vuelve a intentarlo.")+
+    '</div>'+
+    '<div class="score-pills">'+
+      '<span>Aciertos: '+aciertos+'/5</span>'+
+      '<span class="'+(win?"yes":"no")+'">'+(win?"Superado":"No superado")+'</span>'+
+      '<span>Producto: Mag-nifico®</span></div>'+
+    (code ? '<div class="code-box"><div class="cl">CÓDIGO DE DESCUENTO</div><div class="cc">'+code+'</div></div>' : '')+
+    '<details class="crm"><summary>Ver registro JSON para CRM</summary><pre>'+
+      JSON.stringify(crm,null,2)+'</pre></details>'+
+    '<div class="dact">'+
+      '<button class="cta ghost" id="retryTest">Repetir test</button>'+
+      '<button class="cta" id="finishDisc">Entendido</button></div>';
+
+  $("discContent").innerHTML = html;
+  closeTest();
+  $("discOverlay").classList.remove("hidden");
+
+  $("finishDisc").addEventListener("click", function(){ $("discOverlay").classList.add("hidden"); });
+  $("retryTest").addEventListener("click", function(){
+    $("discOverlay").classList.add("hidden");
+    openTest();
+  });
+}
+$("closeDisc").addEventListener("click", function(){ $("discOverlay").classList.add("hidden"); });
+
+/* Cerrar modales al pulsar el fondo */
+Array.prototype.forEach.call(document.querySelectorAll(".overlay"), function(ov){
+  ov.addEventListener("click", function(e){ if(e.target===ov) ov.classList.add("hidden"); });
+});
+</script>
+</body>
+</html>
