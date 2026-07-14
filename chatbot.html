@@ -370,7 +370,8 @@ function send(text){
   }).then(function(res){ return res.json(); }).then(function(data){
     var _c=(data.candidates&&data.candidates[0])||null;
     var _parts=(_c&&_c.content&&_c.content.parts)||[];
-    var raw=(_parts.map(function(p){return p.text||"";}).join("\n").trim())||ESCALATION_PHRASE;
+    var raw=(_parts.map(function(p){return p.text||"";}).join("\n").trim());
+    if(!raw){ raw="[DIAG] "+JSON.stringify(data).slice(0,700); }
 
     var parts=raw.split(META);
     var clientText=(parts[0]||"").trim();
