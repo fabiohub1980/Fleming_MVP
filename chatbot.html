@@ -183,10 +183,10 @@ function postToMake(entry){
   };
   // no-cors + text/plain evita el bloqueo CORS del webhook de Make;
   // Make recibe y parsea el JSON del cuerpo igualmente.
-  return fetch(CONFIG.webhookUrl,{
+  var emailEndpoint = CONFIG.apiEndpoint.replace(/\/+$/,"") + "/email";
+  return fetch(emailEndpoint,{
     method:"POST",
-    mode:"no-cors",
-    headers:{"Content-Type":"text/plain;charset=utf-8"},
+    headers:{"Content-Type":"application/json"},
     body:JSON.stringify(payload)
   });
 }
