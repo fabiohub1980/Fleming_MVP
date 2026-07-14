@@ -371,7 +371,21 @@ function send(text){
     var _c=(data.candidates&&data.candidates[0])||null;
     var _parts=(_c&&_c.content&&_c.content.parts)||[];
     var raw=(_parts.map(function(p){return p.text||"";}).join("\n").trim());
-    if(!raw){ raw="[DIAG] "+JSON.stringify(data).slice(0,700); }
+    if(!raw){
+      rmTyping();
+      var _err=data.error||{};
+      var _fr=(_c&&_c.finishReason)||"";
+      var msg;
+      if(_err.code===429||/RESOURCE_EXHAUSTED|quota|rate|too many/i.test((_err.status||"")+" "+(_err.message||""))){
+        msg="El asistente ha alcanzado el limite de uso gratuito por ahora. Espera unos segundos e intentalo de nuevo.";
+      } else if(_fr==="SAFETY"){
+        msg="No puedo responder a esa consulta en este momento.";
+      } else {
+        msg="No he podido generar una respuesta. Intentalo de nuevo en un momento.";
+      }
+      addBot(msg,false);
+      return;
+    }
 
     var parts=raw.split(META);
     var clientText=(parts[0]||"").trim();
