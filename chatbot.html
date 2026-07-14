@@ -366,7 +366,7 @@ function send(text){
   fetch(endpoint,{
     method:"POST",
     headers:{"Content-Type":"application/json"},
-    body:JSON.stringify({system_instruction:{parts:[{text:SYSTEM_PROMPT}]},contents:contents,generationConfig:{maxOutputTokens:CONFIG.maxTokens}})
+    body:JSON.stringify({system_instruction:{parts:[{text:SYSTEM_PROMPT}]},contents:contents,generationConfig:{maxOutputTokens:CONFIG.maxTokens},safetySettings:[{category:"HARM_CATEGORY_HARASSMENT",threshold:"BLOCK_NONE"},{category:"HARM_CATEGORY_HATE_SPEECH",threshold:"BLOCK_NONE"},{category:"HARM_CATEGORY_SEXUALLY_EXPLICIT",threshold:"BLOCK_NONE"},{category:"HARM_CATEGORY_DANGEROUS_CONTENT",threshold:"BLOCK_NONE"}]})
   }).then(function(res){ return res.json(); }).then(function(data){
     var _c=(data.candidates&&data.candidates[0])||null;
     var _parts=(_c&&_c.content&&_c.content.parts)||[];
