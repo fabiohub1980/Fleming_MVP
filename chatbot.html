@@ -21,6 +21,7 @@
   .flm-idbar{padding:8px 16px;background:#fff;border-bottom:1px solid #e3eaf4;display:flex;align-items:center;gap:8px;font-size:12px}
   .flm-idbar input{flex:1;padding:5px 8px;border-radius:6px;background:#f4f7fb;border:1px solid #dbe4f0;outline:none;font-size:12px}
   .flm-idbar input:focus{border-color:#16407e}
+  .flm-idbar input.flm-invalid{border-color:#c0392b !important;background:#fdecea;box-shadow:0 0 0 2px rgba(192,57,50,.12)}
   .flm-idbar .flm-idok{padding:5px 10px;border-radius:6px;background:#16407e;color:#fff;border:none;cursor:pointer}
   .flm-idbar .flm-edit{margin-left:auto;color:#16407e;background:none;border:none;cursor:pointer;text-decoration:underline;font-size:12px}
   .flm-msgs{flex:1;overflow-y:auto;padding:16px;display:flex;flex-direction:column;gap:12px}
@@ -237,8 +238,8 @@ function renderIdBar(){
       '<input id="flm-fn" placeholder="Nombre de farmacia" value="'+esc(farmacia.nombre)+'"/>'+
       '<input id="flm-fe" placeholder="Email de farmacia" value="'+esc(farmacia.email)+'"/>'+
       '<button class="flm-idok" id="flm-idok">OK</button>';
-    document.getElementById("flm-fn").oninput = function(e){ farmacia.nombre = e.target.value; };
-    document.getElementById("flm-fe").oninput = function(e){ farmacia.email = e.target.value; };
+    document.getElementById("flm-fn").oninput = function(e){ farmacia.nombre = e.target.value; e.target.classList.remove("flm-invalid"); };
+    document.getElementById("flm-fe").oninput = function(e){ farmacia.email = e.target.value; e.target.classList.remove("flm-invalid"); };
     document.getElementById("flm-idok").onclick = function(){ editId=false; renderIdBar(); };
   } else {
     var label = (farmacia.nombre.trim()||"Farmacia sin identificar") + (farmacia.email.trim()? " - "+farmacia.email.trim():"");
@@ -355,6 +356,19 @@ function openPanel(){
 function send(text){
   var q=(text!=null?text:textEl.value).trim();
   if(!q||loading) return;
+  var _fn=(farmacia.nombre||"").trim(), _fe=(farmacia.email||"").trim();
+  var _feOk=/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(_fe);
+  if(!_fn || !_feOk){
+    editId=true; renderIdBar();
+    var _e1=document.getElementById("flm-fn"); if(_e1 && !_fn) _e1.classList.add("flm-invalid");
+    var _e2=document.getElementById("flm-fe"); if(_e2 && !_feOk) _e2.classList.add("flm-invalid");
+    if(_e1 && !_fn){ _e1.focus(); } else if(_e2){ _e2.focus(); }
+    var _w=document.getElementById("flm-idwarn");
+    if(!_w){ _w=document.createElement("div"); _w.id="flm-idwarn"; _w.style.cssText="color:#c0392b;font-size:11px;font-weight:600;padding:2px 16px 4px"; var _ib=document.getElementById("flm-idbar"); _ib.parentNode.insertBefore(_w,_ib.nextSibling); }
+    _w.textContent="Indica el nombre de la farmacia y un email de contacto valido para poder realizar la consulta.";
+    return;
+  }
+  var _wok=document.getElementById("flm-idwarn"); if(_wok) _wok.remove();
   editId=false; renderIdBar();
   addUser(q);
   messages.push({role:"user",content:q});
