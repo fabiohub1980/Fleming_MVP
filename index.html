@@ -36,6 +36,20 @@
   .login-btn:hover{filter:brightness(1.08)}
   .login-err{color:var(--warn);font-size:13px;margin-top:12px;min-height:18px;text-align:center}
   .login-hint{margin-top:18px;font-size:11px;color:var(--muted);text-align:center;line-height:1.6}
+  .login-consent{display:flex;align-items:flex-start;gap:9px;margin-top:2px;font-size:12px;color:#334155;line-height:1.45}
+  .login-consent input{margin-top:1px;width:16px;height:16px;accent-color:var(--blue);flex-shrink:0;cursor:pointer}
+  .login-consent a{color:var(--blue);font-weight:600;text-decoration:underline;cursor:pointer}
+  .priv-overlay{position:fixed;inset:0;background:rgba(8,26,69,.55);backdrop-filter:blur(3px);z-index:60;display:flex;align-items:center;justify-content:center;padding:20px}
+  .priv-modal{background:#fff;border-radius:16px;max-width:560px;width:100%;max-height:88vh;overflow:hidden;display:flex;flex-direction:column;box-shadow:0 40px 90px rgba(8,26,69,.5)}
+  .priv-head{padding:14px 20px;background:linear-gradient(90deg,#081a45,#16407e);color:#fff;display:flex;align-items:center;justify-content:space-between}
+  .priv-head .t{font-weight:700;font-size:15px}
+  .priv-head .x{background:rgba(255,255,255,.14);border:none;color:#fff;width:32px;height:32px;border-radius:8px;cursor:pointer;font-size:15px}
+  .priv-body{padding:20px;overflow-y:auto;font-size:12.5px;line-height:1.6;color:#334155;text-align:justify}
+  .priv-body h4{color:var(--navy);margin:0 0 10px;font-size:15px}
+  .priv-foot{padding:13px 20px;border-top:1px solid var(--line);display:flex;justify-content:flex-end;gap:10px}
+  .priv-foot button{padding:9px 16px;border:none;border-radius:9px;cursor:pointer;font-weight:600;font-size:13px}
+  .priv-accept{background:var(--blue);color:#fff}
+  .priv-close{background:#e7f0fb;color:var(--blue)}
 
   /* ---------- APP SHELL ---------- */
   #app{min-height:100vh;display:flex;flex-direction:column}
@@ -162,12 +176,31 @@
         <label for="p">Contraseña</label>
         <input id="p" type="password" placeholder="Contraseña" autocomplete="off">
       </div>
+      <label class="login-consent">
+        <input type="checkbox" id="privacyChk">
+        <span>He leído y acepto la <a id="openPriv">Política de privacidad y tratamiento de datos</a>.</span>
+      </label>
       <button class="login-btn" type="submit">Entrar</button>
       <div class="login-err" id="loginErr"></div>
     </form>
     <div class="login-hint">Acceso restringido · Mag-nifico® · Proyecto Fleming</div>
   </div>
 </section>
+
+<!-- ============ MODAL POLITICA DE PRIVACIDAD ============ -->
+<div class="priv-overlay hidden" id="privOverlay">
+  <div class="priv-modal">
+    <div class="priv-head"><div class="t">Política de privacidad y tratamiento de datos</div><button class="x" id="closePriv">✕</button></div>
+    <div class="priv-body">
+      <h4>Información sobre protección de datos</h4>
+      <p><em>(Texto simulado a efectos de demostración.)</em> Fab Pharma, S.A., con domicilio social en Calle Ejemplo 1, Barcelona, actúa como <strong>responsable del tratamiento</strong> de los datos personales recogidos en esta plataforma. Los únicos datos que se solicitan son el <strong>nombre de la farmacia</strong> y una <strong>dirección de correo electrónico</strong> de contacto, que se recaban con la finalidad de gestionar la actividad formativa, aplicar el descuento correspondiente y, en su caso, dar respuesta a las consultas derivadas al Departamento Científico. La base jurídica del tratamiento es el consentimiento de la persona interesada y el interés legítimo derivado de la relación comercial. Los datos se conservarán únicamente durante el tiempo necesario para dichas finalidades y no se cederán a terceros, salvo obligación legal. La persona interesada puede ejercer sus derechos de acceso, rectificación, supresión, oposición, limitación y portabilidad, así como retirar su consentimiento, dirigiéndose por escrito a privacidad@fabpharma.example. Para más información puede consultarse la política de privacidad completa o contactar con el Delegado de Protección de Datos en dpo@fabpharma.example.</p>
+    </div>
+    <div class="priv-foot">
+      <button class="priv-close" id="privCloseBtn">Cerrar</button>
+      <button class="priv-accept" id="privAcceptBtn">Aceptar y marcar</button>
+    </div>
+  </div>
+</div>
 
 <!-- ================= APP ================= -->
 <section id="app" class="hidden">
@@ -327,6 +360,10 @@ var pildoraCompletada = false;
 $("loginForm").addEventListener("submit", function(e){
   e.preventDefault();
   var u = $("u").value.trim(), p = $("p").value;
+  if(!$("privacyChk").checked){
+    $("loginErr").textContent = "Debe leer y aceptar la política de privacidad para acceder.";
+    return;
+  }
   if(u.toLowerCase()===CREDS.user.toLowerCase() && p===CREDS.pass){
     $("whoName").textContent = CREDS.user;
     $("login").classList.add("hidden");
@@ -337,6 +374,11 @@ $("loginForm").addEventListener("submit", function(e){
     $("p").value = "";
   }
 });
+$("openPriv").addEventListener("click", function(e){ e.preventDefault(); $("privOverlay").classList.remove("hidden"); });
+$("closePriv").addEventListener("click", function(){ $("privOverlay").classList.add("hidden"); });
+$("privCloseBtn").addEventListener("click", function(){ $("privOverlay").classList.add("hidden"); });
+$("privAcceptBtn").addEventListener("click", function(){ $("privacyChk").checked=true; $("privOverlay").classList.add("hidden"); $("loginErr").textContent=""; });
+$("privOverlay").addEventListener("click", function(e){ if(e.target===this) this.classList.add("hidden"); });
 $("logoutBtn").addEventListener("click", function(){
   $("app").classList.add("hidden");
   $("login").classList.remove("hidden");
